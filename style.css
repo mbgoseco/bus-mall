@@ -1,0 +1,42 @@
+body {
+  position: relative;
+  background-color: rgb(255, 241, 113);
+}
+
+h2 {
+  text-align: center;
+  font-family: Tahoma;
+  font-size: 1.2em;
+  padding-top: 15px;
+}
+
+#images {
+  text-align: center;
+}
+
+img {
+  width: 275px;
+  margin: 15px;
+  box-shadow: 3px 3px 5px 5px rgb(54, 54, 54);
+}
+
+#tally {
+  background-color: rgb(162, 162, 255);
+  float: left;
+  width: 22%;
+  height: 100%;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+#reset {
+  width: 100px;
+  height: 25px;
+}
+
+#tally-title, #percent-title, li {
+  font-family: Verdana;
+  font-size: 0.8em;
+  text-align: left;
+  padding: 1px;
+}
