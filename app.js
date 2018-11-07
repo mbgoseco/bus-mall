@@ -38,8 +38,10 @@ var tracker = {
       // ...and flags the newly chosen images as used for the next round
       for(var j = 0; j < tracker.imgID.length; j++) {
         tracker.products[tracker.imgID[j]].used = true;
-        tracker.products[tracker.imgID[j]].views += 1;
-        charts[1].data.datasets[0].data[tracker.imgID[j]] += 1;
+        tracker.products[tracker.imgID[j]].views++;
+        charts[1].data.datasets[0].data[tracker.imgID[j]]++;
+        var jsonDonutChart = JSON.stringify(charts[1].data.datasets[0].data);
+        localStorage.setItem('viewData', jsonDonutChart);
         charts[1].update();
       }
       return true;
@@ -69,15 +71,20 @@ var tracker = {
   addClicks: function(imgName) {
     for(var i = 0; i < tracker.products.length; i++) {
       if (imgName === tracker.products[i].name) {
-        tracker.products[i].votes += 1;
-        tracker.totalClicks += 1;
-        charts[0].data.datasets[0].data[i] += 1;
+        tracker.products[i].votes++;
+        tracker.totalClicks++;
+        charts[0].data.datasets[0].data[i]++;
+        var jsonBarChart = JSON.stringify(charts[0].data.datasets[0].data);
+        localStorage.setItem('voteData', jsonBarChart);
         charts[0].update();
       }
     }
     if (tracker.totalClicks >= 25) {
       tracker.imgDiv.removeEventListener('click', tracker.clickHandler);
-      tracker.resetButton();
+      if(!localStorage.getItem('bgcolors')) {
+        tracker.saveColors();
+      }
+      tracker.resetButtons();
     } else {
       tracker.render();
     }
@@ -90,15 +97,31 @@ var tracker = {
     }
   },
 
-  resetButton: function() {
-    var button = document.createElement('button');
-    button.id = 'reset';
-    button.textContent = 'Reset';
-    tracker.buttonEl.appendChild(button);
+  resetButtons: function() {
+    var reloadButton = document.createElement('button');
+    reloadButton.id = 'reset';
+    reloadButton.textContent = 'New Survey';
+    tracker.buttonEl.appendChild(reloadButton);
 
-    button.addEventListener('click', function() {
+    reloadButton.addEventListener('click', function() {
       location.reload();
     });
+
+    var clearButton = document.createElement('button');
+    clearButton.id = 'clear';
+    clearButton.textContent = 'Erase Survey Data';
+    tracker.buttonEl.appendChild(clearButton);
+
+    clearButton.addEventListener('click', function() {
+      localStorage.clear();
+      location.reload();
+    });
+  },
+  saveColors: function() {
+    var backgrounds = JSON.stringify(charts[0].data.datasets[0].backgroundColor);
+    localStorage.setItem('bgcolors', backgrounds);
+    var borders = JSON.stringify(charts[0].data.datasets[0].borderColor);
+    localStorage.setItem('bdcolors', borders);
   },
 };
 
@@ -172,17 +195,41 @@ var charts = [barChart, donutChart];
     },
   });
 
+  // populates bar chart with item names for labels and data for item votes
   for(var i = 0; i < tracker.products.length; i++) {
     charts[0].data.labels.push(tracker.products[i].name);
-    charts[0].data.datasets[0].data.push(tracker.products[i].votes);
-    charts[0].data.datasets[0].backgroundColor.push(`rgba(${tracker.products[i].color[0]}, ${tracker.products[i].color[1]}, ${tracker.products[i].color[2]}, 0.5)`);
-    charts[0].data.datasets[0].borderColor.push(`rgba(${tracker.products[i].color[0]}, ${tracker.products[i].color[1]}, ${tracker.products[i].color[2]}, 1`);
+    // conditional check for local storage data and setting it
+    if (localStorage.getItem('voteData')) {
+      charts[0].data.datasets[0].data = JSON.parse(localStorage.getItem('voteData'));
+      charts[0].update();
+    } else {
+      charts[0].data.datasets[0].data.push(tracker.products[i].votes);
+    }
+    if (localStorage.getItem('bgcolors')) {
+      charts[0].data.datasets[0].backgroundColor = JSON.parse(localStorage.getItem('bgcolors'));
+      charts[0].data.datasets[0].borderColor = JSON.parse(localStorage.getItem('bdcolors'));
+    } else {
+      charts[0].data.datasets[0].backgroundColor.push(`rgba(${tracker.products[i].color[0]}, ${tracker.products[i].color[1]}, ${tracker.products[i].color[2]}, 0.5)`);
+      charts[0].data.datasets[0].borderColor.push(`rgba(${tracker.products[i].color[0]}, ${tracker.products[i].color[1]}, ${tracker.products[i].color[2]}, 1`);
+    }
   }
+  // populates donut chart with names for labels and data for times item was viewed
   for(var j = 0; j < tracker.products.length; j++) {
     charts[1].data.labels.push(tracker.products[j].name);
-    charts[1].data.datasets[0].data.push(tracker.products[j].views);
-    charts[1].data.datasets[0].backgroundColor.push(`rgba(${tracker.products[j].color[0]}, ${tracker.products[j].color[1]}, ${tracker.products[j].color[2]}, 0.5)`);
-    charts[1].data.datasets[0].borderColor.push(`rgba(${tracker.products[j].color[0]}, ${tracker.products[j].color[1]}, ${tracker.products[j].color[2]}, 1`);
+    // conditional check for local storage data and setting it
+    if (localStorage.getItem('viewData')) {
+      charts[1].data.datasets[0].data = JSON.parse(localStorage.getItem('viewData'));
+      charts[1].update();
+    } else {
+      charts[1].data.datasets[0].data.push(tracker.products[j].views);
+    }
+    if (localStorage.getItem('bdcolors')) {
+      charts[1].data.datasets[0].backgroundColor = JSON.parse(localStorage.getItem('bgcolors'));
+      charts[1].data.datasets[0].borderColor = JSON.parse(localStorage.getItem('bdcolors'));
+    } else {
+      charts[1].data.datasets[0].backgroundColor.push(`rgba(${tracker.products[j].color[0]}, ${tracker.products[j].color[1]}, ${tracker.products[j].color[2]}, 0.5)`);
+      charts[1].data.datasets[0].borderColor.push(`rgba(${tracker.products[j].color[0]}, ${tracker.products[j].color[1]}, ${tracker.products[j].color[2]}, 1`);
+    }
   }
 
 })();
