@@ -2,19 +2,27 @@
 <html>
 <head>
   <title>BusMall Marketing Survey</title>
+  <link href="https://fonts.googleapis.com/css?family=Sriracha" rel="stylesheet">
   <link rel="stylesheet" href="reset.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header></header>
+  <header><img id="logo" src="./img/logo.jpg">
+    <h1>BusMall</h1>
+  </header>
   <main id="main-content">
-    <aside id="tally"></aside>
     <div id="main-body">
       <h2>Choose an item you would like to see in our catalog</h2>
       <div id="images"></div>
-  </div>
+      <div id="button-div"></div>
+    </div>
+  <canvas id="bar-chart"></canvas>
+  <br>
+  <h3>Number of times each item was displayed</h3>
+  <canvas id="donut-chart"></canvas>
   </main>
   <footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.js"></script>
     <script src="app.js"></script>
   </footer>
 </body>

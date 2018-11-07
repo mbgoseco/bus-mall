@@ -5,6 +5,8 @@ function Product(name, src) {
   this.src = src;
   this.votes = 0;
   this.used = false;
+  this.views = 0;
+  this.color = [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)];
   tracker.products.push(this);
 };
 
@@ -15,7 +17,7 @@ var tracker = {
 
   mainEl: document.getElementById('main-content'),
   imgDiv: document.getElementById('images'),
-  asideEl: document.getElementById('tally'),
+  buttonEl: document.getElementById('button-div'),
 
   getRandomIndex: function() {
     return Math.floor(Math.random() * tracker.products.length);
@@ -36,11 +38,12 @@ var tracker = {
       // ...and flags the newly chosen images as used for the next round
       for(var j = 0; j < tracker.imgID.length; j++) {
         tracker.products[tracker.imgID[j]].used = true;
-        console.log(tracker.products[tracker.imgID[j]]);
+        tracker.products[tracker.imgID[j]].views += 1;
+        charts[1].data.datasets[0].data[tracker.imgID[j]] += 1;
+        charts[1].update();
       }
       return true;
     } else {
-      console.log('condition failed!');
       return false;
     }
   },
@@ -68,6 +71,8 @@ var tracker = {
       if (imgName === tracker.products[i].name) {
         tracker.products[i].votes += 1;
         tracker.totalClicks += 1;
+        charts[0].data.datasets[0].data[i] += 1;
+        charts[0].update();
       }
     }
     if (tracker.totalClicks >= 25) {
@@ -83,40 +88,13 @@ var tracker = {
     if (imgInput === images[0].name || imgInput === images[1].name || imgInput === images[2].name) {
       tracker.addClicks(imgInput);
     }
-
   },
+
   resetButton: function() {
     var button = document.createElement('button');
     button.id = 'reset';
     button.textContent = 'Reset';
-    tracker.mainEl.appendChild(button);
-
-    var tallyTitleEl = document.createElement('p');
-    tallyTitleEl.id = 'tally-title';
-    tallyTitleEl.textContent = 'TOTAL VOTES BY ITEM';
-    tracker.asideEl.appendChild(tallyTitleEl);
-    var finalList = document.createElement('ul');
-    for(var i = 0; i < tracker.products.length; i++) {
-      var liEl = document.createElement('li');
-      liEl.textContent = `${tracker.products[i].name} - Votes: ${tracker.products[i].votes}`;
-      finalList.appendChild(liEl);
-    }
-    tracker.asideEl.appendChild(finalList);
-
-    var brEl = document.createElement('br');
-    tracker.asideEl.appendChild(brEl);
-
-    var percentTitleEl = document.createElement('p');
-    percentTitleEl.id = 'percent-title';
-    percentTitleEl.textContent = 'PERCENT OF VOTES BY ITEM';
-    tracker.asideEl.appendChild(percentTitleEl);
-    var percentList = document.createElement('ul');
-    for(var j = 0; j < tracker.products.length; j++) {
-      liEl = document.createElement('li');
-      liEl.textContent = `${tracker.products[j].name}: ${(tracker.products[j].votes / 25) * 100}%`;
-      percentList.appendChild(liEl);
-    }
-    tracker.asideEl.appendChild(percentList);
+    tracker.buttonEl.appendChild(button);
 
     button.addEventListener('click', function() {
       location.reload();
@@ -145,6 +123,68 @@ var tracker = {
   new Product('USB Tentacle', './img/usb.gif');
   new Product('Water Can', './img/water-can.jpg');
   new Product('Wine Glass', './img/wine-glass.jpg');
+})();
+
+var barChart;
+var donutChart;
+var charts = [barChart, donutChart];
+(function createCharts() {
+  var ctx = document.getElementById('bar-chart').getContext('2d');
+  charts[0] = new Chart(ctx, {
+    type: 'horizontalBar',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Number of Votes per Item',
+        data: [],
+        backgroundColor: [],
+        borderColor: [],
+        borderWidth: 1,
+      }],
+    },
+    options: {
+      scales: {
+        xAxes: [{
+          ticks: {
+            beginAtZero: true,
+            stepSize: 1,
+          },
+        }],
+      },
+    },
+  });
+
+  var cty = document.getElementById('donut-chart').getContext('2d');
+  charts[1] = new Chart(cty, {
+    type: 'doughnut',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Percent of Votes per Item',
+        data: [],
+        backgroundColor: [],
+        borderColor: [],
+        borderWidth: 1,
+      }],
+    },
+    options: {
+      cutoutPercentage: 40,
+    },
+  });
+
+  for(var i = 0; i < tracker.products.length; i++) {
+    charts[0].data.labels.push(tracker.products[i].name);
+    charts[0].data.datasets[0].data.push(tracker.products[i].votes);
+    charts[0].data.datasets[0].backgroundColor.push(`rgba(${tracker.products[i].color[0]}, ${tracker.products[i].color[1]}, ${tracker.products[i].color[2]}, 0.5)`);
+    charts[0].data.datasets[0].borderColor.push(`rgba(${tracker.products[i].color[0]}, ${tracker.products[i].color[1]}, ${tracker.products[i].color[2]}, 1`);
+  }
+  for(var j = 0; j < tracker.products.length; j++) {
+    charts[1].data.labels.push(tracker.products[j].name);
+    charts[1].data.datasets[0].data.push(tracker.products[j].views);
+    charts[1].data.datasets[0].backgroundColor.push(`rgba(${tracker.products[j].color[0]}, ${tracker.products[j].color[1]}, ${tracker.products[j].color[2]}, 0.5)`);
+    charts[1].data.datasets[0].borderColor.push(`rgba(${tracker.products[j].color[0]}, ${tracker.products[j].color[1]}, ${tracker.products[j].color[2]}, 1`);
+  }
+
 })();
 
 tracker.render();

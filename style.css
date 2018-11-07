@@ -1,9 +1,30 @@
 body {
-  position: relative;
-  background-color: rgb(255, 241, 113);
+  background-color: rgb(240, 240, 240);
 }
 
-h2 {
+header {
+  height: 70px;
+  background-color: rgb(161, 161, 161);
+  border-bottom: 7px solid rgb(255, 230, 0);
+  text-align: left;
+}
+
+#logo {
+  float: left;
+  width: 95px;
+  margin-right: 10px;
+}
+
+h1 {
+  position: absolute;
+  font-family: 'Sriracha', cursive;
+  font-size: 1.9em;
+  left: 105px;
+  padding-top: 20px;
+  color: rgb(0, 0, 77);
+}
+
+h2, h3 {
   text-align: center;
   font-family: Tahoma;
   font-size: 1.2em;
@@ -14,29 +35,30 @@ h2 {
   text-align: center;
 }
 
-img {
+#images img {
   width: 275px;
   margin: 15px;
   box-shadow: 3px 3px 5px 5px rgb(54, 54, 54);
 }
 
-#tally {
-  background-color: rgb(162, 162, 255);
-  float: left;
-  width: 22%;
-  height: 100%;
-  margin-top: auto;
-  margin-bottom: auto;
+#button-div {
+  text-align: center;
 }
 
 #reset {
-  width: 100px;
-  height: 25px;
+  width: 150px;
+  height: 50px;
 }
 
-#tally-title, #percent-title, li {
-  font-family: Verdana;
-  font-size: 0.8em;
-  text-align: left;
-  padding: 1px;
+#bar-chart, #donut-chart {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+footer {
+  display: flex;
+  height: 70px;
+  background-color: rgb(161, 161, 161);
+  border-top: 7px solid rgb(255, 230, 0);
+  margin-top: 15px;
 }
