@@ -84,6 +84,8 @@ var tracker = {
       if(!localStorage.getItem('bgcolors')) {
         tracker.saveColors();
       }
+      var showCharts = document.getElementById('charts');
+      showCharts.style.visibility = 'visible';
       tracker.resetButtons();
     } else {
       tracker.render();
