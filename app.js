@@ -18,6 +18,7 @@ var tracker = {
   mainEl: document.getElementById('main-content'),
   imgDiv: document.getElementById('images'),
   buttonEl: document.getElementById('button-div'),
+  propmtEl: document.getElementById('prompt'),
 
   getRandomIndex: function() {
     return Math.floor(Math.random() * tracker.products.length);
@@ -61,6 +62,8 @@ var tracker = {
       removeImgs[x].parentNode.removeChild(removeImgs[x]);
     }
 
+    tracker.propmtEl.innerText = `Choose an item you would like to see in our catalog: ${25 - tracker.totalClicks} remaining`;
+
     for(var i = 0; i < tracker.imgID.length; i++) {
       var imgEl = document.createElement('img');
       imgEl.setAttribute('src', tracker.products[tracker.imgID[i]].src);
@@ -84,6 +87,7 @@ var tracker = {
       if(!localStorage.getItem('bgcolors')) {
         tracker.saveColors();
       }
+      tracker.propmtEl.innerText = 'Thank you!';
       var showCharts = document.getElementById('charts');
       showCharts.style.visibility = 'visible';
       tracker.resetButtons();
